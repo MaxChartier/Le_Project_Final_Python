@@ -1,25 +1,42 @@
-from GIF_animation import Flower, Zombie, Spider, Bee
+# This code was created by CHARTIER Max, MENARD Marley, BORDEL Tristan, Hawa, Rith (nom de famille!)
+# This is the main of our code, it countains all the loops that make the game playable and all the images needed to make
+# it as enjoyable as possible. We used the library pycharm to develop our game, because it is known as an easy way
+# to access the 2D world from Python. All code bellow plays a part in the good functioning of our game and it will all
+# be explained.
 
+# Here in the first few lines we import all the libraries we will need, random to generate random numbers, pygame to use
+# pygame, sys to be able to quit the loops, math which will play a really important part in the creating of gravity and
+# finally the importation of our own created GIF_animation.py code.
+from GIF_animation import Flower, Zombie, Spider, Bee
 import random
 import pygame
 import sys
 import math
 import time
 
+# We need to initialize pygame in order for it to work, same with the clock. We also have our main images, such as the
+# player, the arrow and the background.
 pygame.init()
 clock = pygame.time.Clock()
 background_image = pygame.image.load("Images/background_for_game.png")
 image = pygame.image.load(r"Images/Player_image1.gif")
 image = pygame.transform.scale(image, (110, 150))
 arrow_image = pygame.image.load("Images/ball2.png")
-difficulty = 1
 
-# Screen/Window parameter
+# The difficulty level and the number of lifes is defined here so that we can use thel after.
+difficulty = 1
+lifes = 3
+
+# Also an important thing in pygame, to have a display screen we need to initialize it, therefor we need to create
+# two variable, width and height that will be taken into the creation of the screen for its size. The name of the 
+# window will be ARCANE ARCHER
 screen_width = 1200
 screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Flower GIF animation")
+pygame.display.set_caption("ARCANE ARCHER")
 
+
+# Definition of our first class!!
 class Button:
     """To create a button."""
 
@@ -130,6 +147,7 @@ def create_sprites_bee(coordinates_bee):
 
     return moving_sprites_bee
 
+
 def game_mode():
     """Game loop for the GAME MODE menu."""
 
@@ -141,9 +159,7 @@ def game_mode():
     base_color_easy = '#d7fcd4'
     base_color_medium = '#d7fcd4'
     base_color_hard = '#d7fcd4'
-
     global difficulty
-
 
     while True:
         # Get the position of the mouse
@@ -263,42 +279,56 @@ def pause_state():
 
 def play():
     """Game loop for the game."""
+    # Here we redfine the variables as global, to be able to use them anywhere, in every loop
+    global lifes
     global difficulty
+    # The direction will correspond to the way the character is oriented, game pause is pretty self-explanatory and jump
+    # just tell us the character is not jumping
     game_paused = False
-    direction = False
+    direction = True
     jump = False
     level = 1
+    # Level 1 will correspond to the first level you face, the coordinates of the character are given, so that you 
+    # appear on the screen, and same for the flower and the spider that will appear randomly which will be your 
+    # enemies. 
     if level == 1:
         x = 50
         y = 450
-        x_im_plant = random.randint(50, 1150)
-        coordinates_flower = (x_im_plant, 499)
+        shoot_plant = random.randint(50, 1150)
+        coordinates_flower = (shoot_plant, 499)
         x_im_spider = random.randint(50, 1150)
         coordinates_spider = (x_im_spider, 0)
         if x > 1100:
             level += 1
-
+        # if you go past the edge of the screen you will change levels
         moving_sprites_flower, moving_sprites_spider = create_sprites_flower(coordinates_flower), \
-                                                   create_sprites_spider(coordinates_spider)
+                                                       create_sprites_spider(coordinates_spider)
 
+
+    # creates the moving sprites
     ###################################################
+    # Variable that will be used to make the enemies shoot and right under the creation of their projectiles
     time_shoot_enemy = 0
     blow_plant = pygame.image.load(r'Images/shoot_plant.png')
     acid_spider = pygame.image.load(r'Images/acid_spider.png')
     fire_plant = False
-    if x_im_plant > x:
-        x_im_plant += 5
-    else :
-        x_im_plant -=5
-    x_plant = x_im_plant
+    # This condition makes the plant shoot in the direction of the character, it would be too easy if she kept 
+    # shooting towards one side 
+    if shoot_plant > x:
+        shoot_plant += 5
+    else:
+        shoot_plant -= 5
+    # gives the coordinates to the shoot
+    x_plant = shoot_plant
     y_plant = 478
-
+    # gives the information about the spider
     fire_spider = False
     x_im_spider += 5
     y_spider = 50
 
     while True:
-        lifes = 3
+        # In this loop, we first initialize a lot of variable to be able to use them for the jump and for the arrow
+        # trajectory
         vel = 9
         mass = 1
         arrow_x = x
@@ -314,6 +344,34 @@ def play():
 
         while not game_paused:
             key_pressed_is = pygame.key.get_pressed()
+            if level == 2:
+                # Fill the screen with black color
+                screen.fill((0, 0, 0))
+                # Render the text
+                font = pygame.font.Font(None, 120)  # Increased font size to 64
+                text_color = (255, 255, 255)  # White
+                text = font.render("NEXT LEVEL", True, text_color)
+                text_rect = text.get_rect(center=(screen_width // 2, screen_height // 2))
+                # Blit the text onto the screen
+                screen.blit(text, text_rect)
+                # Update the screen
+                pygame.display.flip()
+                # Wait for 3 seconds
+                time.sleep(1.5)
+                # Increment the level
+                level += 1
+
+            if level == 3:
+                x = 50
+                y = 450
+                x_plant = random.randint(50, 1150)
+                coordinates_flower = (x_plant, 499)
+                x_im_spider = random.randint(50, 1150)
+                coordinates_spider = (x_im_spider, 0)
+                # if you go past the edge of the screen you will change levels
+                moving_sprites_flower, moving_sprites_spider = create_sprites_flower(coordinates_flower), \
+                                                               create_sprites_spider(coordinates_spider)
+                level +=1
 
             if key_pressed_is[pygame.K_q]:
                 x -= 3
@@ -321,15 +379,14 @@ def play():
             if key_pressed_is[pygame.K_d]:
                 x += 3
                 direction = True
-            if x>1200:
-                level = 2
+            if x > 1200:
+                level +=1
                 x = 10
 
             if arrow_fired:
                 arrow_x += arrow_velocity_x
                 arrow_y += arrow_velocity_y
                 arrow_velocity_y += gravity
-
 
             if arrow_y + arrow_image.get_height() > 750:
                 arrow_fired = False
@@ -365,10 +422,11 @@ def play():
                     vel = 9
                     mass = 1
 
-
             # We need to draw the elements:
             # - Screen color
             screen.blit(background_image, (0, 0))
+
+
 
             if arrow_fired:
                 screen.blit(pygame.transform.rotate(arrow_image, math.degrees(-arrow_angle)), (arrow_x, arrow_y))
@@ -401,12 +459,12 @@ def play():
 
             ################################################
             time_shoot_enemy += 1
-            if difficulty ==1:
+            if difficulty == 1:
                 if round(time_shoot_enemy) % 500 == 0:
                     fire_plant = True
                 if round(time_shoot_enemy) % 500 == 0:
                     fire_spider = True
-            if difficulty ==2:
+            if difficulty == 2:
                 if round(time_shoot_enemy) % 400 == 0:
                     fire_plant = True
                 if round(time_shoot_enemy) % 400 == 0:
@@ -416,31 +474,42 @@ def play():
                     fire_plant = True
                 if round(time_shoot_enemy) % 300 == 0:
                     fire_spider = True
+            game_over = False
+            if lifes <= 0:
+                font = pygame.font.SysFont(None, 100)
+                img = font.render('GAME OVER', True, (0, 10, 90))
+                screen.blit(img, (400, 300))
+
 
             if fire_plant:
-                if x_im_plant < x:
+                if shoot_plant < x:
                     x_plant += 5
                 else:
-                    x_plant -=5
-                screen.blit(blow_plant, (x_plant, y_plant+35))
+                    x_plant -= 5
+                screen.blit(blow_plant, (x_plant, y_plant + 35))
 
             if x_plant < 0 or x_plant > 1200:
                 fire_plant = False
-                x_plant = x_im_plant
+                x_plant = shoot_plant
 
-            if (x-20 < x_plant < x+20) and (y-30 <y_plant<y+30):
+            if (x - 20 < x_plant < x + 20) and (y - 30 < y_plant < y + 30):
                 lifes -= 1
-                x_plant = x_im_plant
+                x_plant = shoot_plant
                 fire_plant = False
 
             ####################################
 
+            font = pygame.font.SysFont(None, 30)
+            img = font.render('Lives =', True, (0, 10, 90))
+            screen.blit(img, (50, 50))
+            img = font.render(str(lifes), 1, (0, 10, 90))
+            screen.blit(img, (130, 50))
 
             if fire_spider:
                 y_spider += 5
                 screen.blit(acid_spider, (x_im_spider, y_spider))
 
-            if x-20 < x_im_spider < x+20 and y-20 < y_spider < y+20:
+            if x - 20 < x_im_spider < x + 20 and y - 20 < y_spider < y + 20:
                 lifes -= 1
                 y_spider = 0
                 fire_spider = False
@@ -449,14 +518,11 @@ def play():
                 fire_spider = False
                 y_spider = 0
 
-            if (x_im_plant - 30 < arrow_x < x_im_plant + 30) and (y_plant - 20 < arrow_y < y_plant + 40):
+            if (x_plant - 30 < arrow_x < x_plant + 30) and (y_plant - 20 < arrow_y < y_plant + 40):
                 arrow_fired = False
-                arrow_x = 9000
-                coordinates_flower = (900,900)
-                x_im_plant = 9000
+                coordinates_flower = (900, 900)
                 y_plant = 9000
                 moving_sprites_flower = create_sprites_flower(coordinates_flower)
-
             if (x_im_spider - 40 < arrow_x < x_im_spider + 40) and (-20 < arrow_y < 20):
                 arrow_fired = False
                 arrow_x = 90000
@@ -495,16 +561,13 @@ def play():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     # Exit the pause menu
                     game_paused = False
-         # - Update what is displayed on the screen
+            # - Update what is displayed on the screen
             if direction:
                 screen.blit(pygame.transform.flip(image, True, False), (x, y))
             if not direction:
                 screen.blit(image, (x, y))
             pygame.display.flip()
             clock.tick(60)
-
-
-
 
         pygame.display.flip()
 
@@ -564,4 +627,3 @@ def main_menu():
 
 if __name__ == '__main__':
     main_menu()
-
