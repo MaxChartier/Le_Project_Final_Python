@@ -294,7 +294,7 @@ def play():
     if level == 1:
         x = 50
         y = 450
-        shoot_plant = random.randint(50, 1150)
+        shoot_plant = random.randint(300, 1150)
         coordinates_flower = (shoot_plant, 499)
         x_im_spider = random.randint(50, 1150)
         coordinates_spider = (x_im_spider, 0)
@@ -313,7 +313,7 @@ def play():
     acid_spider = pygame.image.load(r'Images/acid_spider.png')
     fire_plant = False
     # This condition makes the plant shoot in the direction of the character, it would be too easy if she kept 
-    # shooting towards one side 
+    # shooting towards one side
     if shoot_plant > x:
         shoot_plant += 5
     else:
@@ -325,7 +325,7 @@ def play():
     fire_spider = False
     x_im_spider += 5
     y_spider = 50
-
+    display = 1
     while True:
         # In this loop, we first initialize a lot of variable to be able to use them for the jump and for the arrow
         # trajectory
@@ -344,7 +344,13 @@ def play():
 
         while not game_paused:
             key_pressed_is = pygame.key.get_pressed()
-            if level == 2:
+            if level == 2 or level==5 or level == 8:
+                if level == 2:
+                    display =2
+                if level == 5:
+                    display = 3
+                if level == 8:
+                    display = 4
                 # Fill the screen with black color
                 screen.fill((0, 0, 0))
                 # Render the text
@@ -361,10 +367,12 @@ def play():
                 # Increment the level
                 level += 1
 
-            if level == 3:
+            if level == 3 or level == 6 or level == 9:
                 x = 50
                 y = 450
+                y_plant = 478
                 x_plant = random.randint(50, 1150)
+                shoot_plant = x_plant
                 coordinates_flower = (x_plant, 499)
                 x_im_spider = random.randint(50, 1150)
                 coordinates_spider = (x_im_spider, 0)
@@ -474,43 +482,53 @@ def play():
                     fire_plant = True
                 if round(time_shoot_enemy) % 300 == 0:
                     fire_spider = True
-            game_over = False
             if lifes <= 0:
                 font = pygame.font.SysFont(None, 100)
-                img = font.render('GAME OVER', True, (0, 10, 90))
+                img = font.render('GAME OVER', True, (255, 255, 90))
                 screen.blit(img, (400, 300))
+
+            font = pygame.font.SysFont(None, 30)
+            img = font.render('Lives =', True, (255, 255, 255))
+            screen.blit(img, (50, 12))
+            img = font.render(str(lifes), 1, (255, 255, 255))
+            screen.blit(img, (130, 12))
+            text = font.render(f"LEVEL: {display}", True, (255, 255, 255))  # White text
+            text_rect = text.get_rect()
+            text_rect.centerx = 1200 // 2  # Center horizontally
+            text_rect.y = 10  # Position at the top
+            screen.blit(text, text_rect)
+            # Draw shot strength meter
+            pygame.draw.rect(screen, (255, 255, 255), (1175, 25, 10, 100))
+            meter_height = int(shot_strength / shot_strength_scale * 160)
+            pygame.draw.rect(screen, (181, 154, 84), (1175, 125 - meter_height, 10, meter_height))
 
 
             if fire_plant:
-                if shoot_plant < x:
-                    x_plant += 5
-                else:
-                    x_plant -= 5
-                screen.blit(blow_plant, (x_plant, y_plant + 35))
+                shoot_plant -=5
+                screen.blit(blow_plant, (shoot_plant, y_plant + 35))
 
-            if x_plant < 0 or x_plant > 1200:
+            if shoot_plant < 0 or shoot_plant > 1200:
                 fire_plant = False
-                x_plant = shoot_plant
-
-            if (x - 20 < x_plant < x + 20) and (y - 30 < y_plant < y + 30):
-                lifes -= 1
-                x_plant = shoot_plant
+                shoot_plant = x_plant
+            if (x - 30 < shoot_plant < x + 30) and (y - 30 < y_plant < y + 30):
+                if lifes ==0:
+                    lifes=0
+                else:
+                    lifes -= 1
+                shoot_plant = x_plant
                 fire_plant = False
 
             ####################################
-
-            font = pygame.font.SysFont(None, 30)
-            img = font.render('Lives =', True, (0, 10, 90))
-            screen.blit(img, (50, 50))
-            img = font.render(str(lifes), 1, (0, 10, 90))
-            screen.blit(img, (130, 50))
 
             if fire_spider:
                 y_spider += 5
                 screen.blit(acid_spider, (x_im_spider, y_spider))
 
             if x - 20 < x_im_spider < x + 20 and y - 20 < y_spider < y + 20:
-                lifes -= 1
+                if lifes == 0:
+                    lifes = 0
+                else:
+                    lifes -= 1
                 y_spider = 0
                 fire_spider = False
 
@@ -521,11 +539,11 @@ def play():
             if (x_plant - 30 < arrow_x < x_plant + 30) and (y_plant - 20 < arrow_y < y_plant + 40):
                 arrow_fired = False
                 coordinates_flower = (900, 900)
+                x_plant = 9000
                 y_plant = 9000
                 moving_sprites_flower = create_sprites_flower(coordinates_flower)
             if (x_im_spider - 40 < arrow_x < x_im_spider + 40) and (-20 < arrow_y < 20):
                 arrow_fired = False
-                arrow_x = 90000
                 coordinates_spider = (900, 900)
                 x_im_spider = 9000
                 y_spider = 9000
