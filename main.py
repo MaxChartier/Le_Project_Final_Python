@@ -366,7 +366,7 @@ def play():
                 time.sleep(1.5)
                 # Increment the level
                 level += 1
-
+## different levels creation. They all work in the same way but with the random creation of enemies it makes them different.
             if level == 3 or level == 6 or level == 9:
                 x = 50
                 y = 450
@@ -380,7 +380,7 @@ def play():
                 moving_sprites_flower, moving_sprites_spider = create_sprites_flower(coordinates_flower), \
                                                                create_sprites_spider(coordinates_spider)
                 level +=1
-
+          ## keys to move the character
             if key_pressed_is[pygame.K_q]:
                 x -= 3
                 direction = False
@@ -390,12 +390,12 @@ def play():
             if x > 1200:
                 level +=1
                 x = 10
-
+            ##shoot arrow 
             if arrow_fired:
                 arrow_x += arrow_velocity_x
                 arrow_y += arrow_velocity_y
                 arrow_velocity_y += gravity
-
+            ## check the coordinates of the arrows to in case delete it 
             if arrow_y + arrow_image.get_height() > 750:
                 arrow_fired = False
                 arrow_velocity_x = 0
@@ -467,6 +467,7 @@ def play():
 
             ################################################
             time_shoot_enemy += 1
+            ##enemies shoot once in every some time, changing with the difficulty
             if difficulty == 1:
                 if round(time_shoot_enemy) % 500 == 0:
                     fire_plant = True
@@ -482,11 +483,12 @@ def play():
                     fire_plant = True
                 if round(time_shoot_enemy) % 300 == 0:
                     fire_spider = True
+                   ##game over screen
             if lifes <= 0:
                 font = pygame.font.SysFont(None, 100)
                 img = font.render('GAME OVER', True, (255, 255, 90))
                 screen.blit(img, (400, 300))
-
+            ## display of all the additional elements such as the lifes and others
             font = pygame.font.SysFont(None, 30)
             img = font.render('Lives =', True, (255, 255, 255))
             screen.blit(img, (50, 12))
@@ -497,16 +499,16 @@ def play():
             text_rect.centerx = 1200 // 2  # Center horizontally
             text_rect.y = 10  # Position at the top
             screen.blit(text, text_rect)
-            # Draw shot strength meter
+            # Draw shot strength meter that shows the strengh
             pygame.draw.rect(screen, (255, 255, 255), (1175, 25, 10, 100))
             meter_height = int(shot_strength / shot_strength_scale * 160)
             pygame.draw.rect(screen, (181, 154, 84), (1175, 125 - meter_height, 10, meter_height))
 
-
+            ## fire of the plant 
             if fire_plant:
                 shoot_plant -=5
                 screen.blit(blow_plant, (shoot_plant, y_plant + 35))
-
+            ##verifies the coordinates to in case erase it
             if shoot_plant < 0 or shoot_plant > 1200:
                 fire_plant = False
                 shoot_plant = x_plant
@@ -519,7 +521,7 @@ def play():
                 fire_plant = False
 
             ####################################
-
+            ##Same for the spider, creation of all the condition to remove one life from the character
             if fire_spider:
                 y_spider += 5
                 screen.blit(acid_spider, (x_im_spider, y_spider))
@@ -550,6 +552,7 @@ def play():
                 moving_sprites_spider = create_sprites_spider(coordinates_spider)
 
                 ##################################################
+                ##loop with events
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN and not arrow_fired:
                     arrow_fired = True
