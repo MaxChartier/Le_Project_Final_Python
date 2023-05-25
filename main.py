@@ -1,4 +1,4 @@
-# This code was created by CHARTIER Max, MENARD Marley, BORDEL Tristan, Hawa, Rith (nom de famille!)
+#This code was created by CHARTIER Max, MENARD Marley, BORDEL Tristan, Hawa, Rith (nom de famille!)
 # This is the main of our code, it countains all the loops that make the game playable and all the images needed to make
 # it as enjoyable as possible. We used the library pycharm to develop our game, because it is known as an easy way
 # to access the 2D world from Python. All code bellow plays a part in the good functioning of our game and it will all
@@ -281,6 +281,7 @@ def play():
     """Game loop for the game."""
     # Here we redfine the variables as global, to be able to use them anywhere, in every loop
     global lifes
+    lifes = 3
     global difficulty
     # The direction will correspond to the way the character is oriented, game pause is pretty self-explanatory and jump
     # just tell us the character is not jumping
